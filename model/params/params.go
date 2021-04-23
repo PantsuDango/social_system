@@ -10,3 +10,8 @@ type AddPostParams struct {
 	Content    string   `json:"Content"     form:"Content"`
 	PictureUrl []string `json:"PictureUrl"  form:"PictureUrl"`
 }
+
+type ListAllPost struct {
+	Offset int `json:"Offset" form:"Offset"  binding:"required"`
+	Limit  int `json:"Limit"  form:"Limit"   binding:"required"`
+}

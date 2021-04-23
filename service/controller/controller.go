@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
 	"social_system/model/params"
+	"social_system/model/result"
 	"social_system/model/tables"
 )
 
@@ -50,4 +51,29 @@ func (Controller Controller) AddPost(ctx *gin.Context, user tables.User) {
 	}
 
 	JSONSuccess(ctx, http.StatusOK, "Success")
+}
+
+// 新建帖子
+func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
+
+	var ListAllPost params.ListAllPost
+	if err := ctx.ShouldBindBodyWith(&ListAllPost, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IncompleteParameters,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	var ListAllPostResult []result.ListAllPost
+	post := Controller.SocialDB.SelectAllPost(ListAllPost.Offset, ListAllPost.Limit)
+	for _, tmp := range post {
+		var ListAllPost result.ListAllPost
+		ListAllPost.ID = tmp.ID
+		ListAllPost.Title = tmp.Title
+
+		ListAllPostResult = append(ListAllPostResult, ListAllPost)
+	}
+
+	JSONSuccess(ctx, http.StatusOK, ListAllPostResult)
 }
