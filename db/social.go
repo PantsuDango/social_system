@@ -42,3 +42,27 @@ func (SocialDB) SelectAllPost(offset, limit int) []tables.Post {
 	exeDB.Offset(offset).Limit(limit).Order(`createtime desc`).Find(&post)
 	return post
 }
+
+func (SocialDB) SelectPostPictureMap(post_id int) []tables.PostPictureMap {
+	var post_picture_map []tables.PostPictureMap
+	exeDB.Where(`post_id = ?`, post_id).Find(&post_picture_map)
+	return post_picture_map
+}
+
+func (SocialDB) SelectCommentCount(post_id int) int {
+	var count int
+	exeDB.Where(`post_id = ?`, post_id).Find(&tables.PostCommentMap{}).Count(&count)
+	return count
+}
+
+func (SocialDB) SelectQuotedCount(post_id int) int {
+	var count int
+	exeDB.Where(`post_id = ?`, post_id).Find(&tables.PostQuotedMap{}).Count(&count)
+	return count
+}
+
+func (SocialDB) SelectStartCount(post_id int) int {
+	var count int
+	exeDB.Where(`post_id = ?`, post_id).Find(&tables.PostStarMap{}).Count(&count)
+	return count
+}
