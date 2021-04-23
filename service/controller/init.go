@@ -55,7 +55,7 @@ var HandlerMap map[string]Handler
 func init() {
 	Controller := new(Controller)
 	HandlerMap = map[string]Handler{
-		"Controller.InitTest": Controller.InitTest,
+		"Controller.AddPost": Controller.AddPost,
 	}
 }
 
@@ -166,7 +166,7 @@ func (ct Controller) Handle(ctx *gin.Context) {
 
 			user, err = ct.SocialDB.QueryUserById(userID)
 			if err != nil {
-				JSONFail(ctx, http.StatusOK, AccessDBError, "Access user table errow.", gin.H{
+				JSONFail(ctx, http.StatusOK, AccessDBError, "Access user table error", gin.H{
 					"Code":    AccessDBError,
 					"Message": err.Error(),
 				})
