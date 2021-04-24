@@ -14,7 +14,7 @@ func (Controller Controller) AddPost(ctx *gin.Context, user tables.User) {
 	var AddPostParams params.AddPostParams
 	if err := ctx.ShouldBindBodyWith(&AddPostParams, binding.JSON); err != nil {
 		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
-			"Code":    IncompleteParameters,
+			"Code":    IllegalRequestParameter,
 			"Message": err.Error(),
 		})
 		return
@@ -56,19 +56,20 @@ func (Controller Controller) AddPost(ctx *gin.Context, user tables.User) {
 // 公共大厅查询所有帖子
 func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
 
-	var ListAllPost params.ListAllPost
-	if err := ctx.ShouldBindBodyWith(&ListAllPost, binding.JSON); err != nil {
+	var ListAllPostParams params.ListAllPostParams
+	if err := ctx.ShouldBindBodyWith(&ListAllPostParams, binding.JSON); err != nil {
 		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
-			"Code":    IncompleteParameters,
+			"Code":    IllegalRequestParameter,
 			"Message": err.Error(),
 		})
 		return
 	}
 
-	var ListAllPostResult []result.ListAllPost
-	post := Controller.SocialDB.SelectAllPost(ListAllPost.Offset, ListAllPost.Limit)
+	var PostInfo []result.PostInfo
+	PostInfo = make([]result.PostInfo, 0)
+	post := Controller.SocialDB.SelectAllPost(ListAllPostParams.Offset, ListAllPostParams.Limit)
 	for _, tmp := range post {
-		var ListAllPost result.ListAllPost
+		var ListAllPost result.PostInfo
 		ListAllPost.ID = tmp.ID
 		ListAllPost.Title = tmp.Title
 		ListAllPost.Content = tmp.Content
@@ -98,8 +99,13 @@ func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
 		count = Controller.SocialDB.SelectStartCount(tmp.ID)
 		ListAllPost.StartCount = count
 
-		ListAllPostResult = append(ListAllPostResult, ListAllPost)
+		PostInfo = append(PostInfo, ListAllPost)
 	}
+
+	var ListAllPostResult result.ListAllPost
+	count := Controller.SocialDB.SelectAllPostCount()
+	ListAllPostResult.AllPostCount = count
+	ListAllPostResult.PostInfo = PostInfo
 
 	JSONSuccess(ctx, http.StatusOK, ListAllPostResult)
 }

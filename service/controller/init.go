@@ -55,7 +55,8 @@ var HandlerMap map[string]Handler
 func init() {
 	Controller := new(Controller)
 	HandlerMap = map[string]Handler{
-		"Controller.AddPost": Controller.AddPost,
+		"Controller.AddPost":     Controller.AddPost,
+		"Controller.ListAllPost": Controller.ListAllPost,
 	}
 }
 

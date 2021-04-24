@@ -1,6 +1,11 @@
 package result
 
 type ListAllPost struct {
+	AllPostCount int        `json:"AllPostCount"  form:"AllPostCount"`
+	PostInfo     []PostInfo `json:"PostInfo"      form:"PostInfo"`
+}
+
+type PostInfo struct {
 	ID           int      `json:"ID"            form:"ID"`
 	Title        string   `json:"Title"         form:"Title"`
 	Content      string   `json:"Content"       form:"Content"`

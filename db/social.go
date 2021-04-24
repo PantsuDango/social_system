@@ -43,6 +43,12 @@ func (SocialDB) SelectAllPost(offset, limit int) []tables.Post {
 	return post
 }
 
+func (SocialDB) SelectAllPostCount() int {
+	var count int
+	exeDB.Model(&tables.Post{}).Count(&count)
+	return count
+}
+
 func (SocialDB) SelectPostPictureMap(post_id int) []tables.PostPictureMap {
 	var post_picture_map []tables.PostPictureMap
 	exeDB.Where(`post_id = ?`, post_id).Find(&post_picture_map)
@@ -51,18 +57,18 @@ func (SocialDB) SelectPostPictureMap(post_id int) []tables.PostPictureMap {
 
 func (SocialDB) SelectCommentCount(post_id int) int {
 	var count int
-	exeDB.Where(`post_id = ?`, post_id).Find(&tables.PostCommentMap{}).Count(&count)
+	exeDB.Model(&tables.PostCommentMap{}).Where(`post_id = ?`, post_id).Count(&count)
 	return count
 }
 
 func (SocialDB) SelectQuotedCount(post_id int) int {
 	var count int
-	exeDB.Where(`post_id = ?`, post_id).Find(&tables.PostQuotedMap{}).Count(&count)
+	exeDB.Model(&tables.PostQuotedMap{}).Where(`post_id = ?`, post_id).Count(&count)
 	return count
 }
 
 func (SocialDB) SelectStartCount(post_id int) int {
 	var count int
-	exeDB.Where(`post_id = ?`, post_id).Find(&tables.PostStarMap{}).Count(&count)
+	exeDB.Model(&tables.PostStarMap{}).Where(`post_id = ?`, post_id).Count(&count)
 	return count
 }
