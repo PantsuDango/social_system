@@ -72,3 +72,15 @@ func (SocialDB) SelectStartCount(post_id int) int {
 	exeDB.Model(&tables.PostStarMap{}).Where(`post_id = ?`, post_id).Count(&count)
 	return count
 }
+
+func (SocialDB) SelectAttentionCount(user_id int) int {
+	var count int
+	exeDB.Model(&tables.UserAttentionMap{}).Where(`user_id = ?`, user_id).Count(&count)
+	return count
+}
+
+func (SocialDB) SelectUserPost(user_id int) []tables.Post {
+	var post []tables.Post
+	exeDB.Where(`user_id = ?`, user_id).Find(&post)
+	return post
+}

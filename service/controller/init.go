@@ -57,6 +57,7 @@ func init() {
 	HandlerMap = map[string]Handler{
 		"Controller.AddPost":     Controller.AddPost,
 		"Controller.ListAllPost": Controller.ListAllPost,
+		"Controller.UserInfo":    Controller.UserInfo,
 	}
 }
 

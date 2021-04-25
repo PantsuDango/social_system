@@ -109,3 +109,51 @@ func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
 
 	JSONSuccess(ctx, http.StatusOK, ListAllPostResult)
 }
+
+// 个人信息
+func (Controller Controller) UserInfo(ctx *gin.Context, user tables.User) {
+
+	var UserInfo result.UserInfo
+	UserInfo.ID = user.ID
+	UserInfo.Nick = user.Nick
+	UserInfo.Username = user.Username
+	UserInfo.Email = user.Email
+	UserInfo.Phone = user.Phone
+	UserInfo.HeadImage = user.HeadImage
+	UserInfo.Sex = user.Sex
+	count := Controller.SocialDB.SelectAttentionCount(user.ID)
+	UserInfo.AttentionCount = count
+
+	var UserPostInfo []result.UserPostInfo
+	UserPostInfo = make([]result.UserPostInfo, 0)
+	post := Controller.SocialDB.SelectUserPost(user.ID)
+	for _, tmp := range post {
+		var ListAllPost result.UserPostInfo
+		ListAllPost.ID = tmp.ID
+		ListAllPost.Title = tmp.Title
+		ListAllPost.Content = tmp.Content
+		ListAllPost.Type = tmp.Type
+		ListAllPost.FromId = tmp.FromId
+		ListAllPost.CreatedAt = tmp.CreatedAt.Format("2006-01-02 15:04:05")
+		ListAllPost.UpdatedAt = tmp.UpdatedAt.Format("2006-01-02 15:04:05")
+		ListAllPost.PictureUrl = make([]string, 0)
+		post_picture_map := Controller.SocialDB.SelectPostPictureMap(tmp.ID)
+		for _, val := range post_picture_map {
+			ListAllPost.PictureUrl = append(ListAllPost.PictureUrl, val.PictureUrl)
+		}
+
+		count = Controller.SocialDB.SelectCommentCount(tmp.ID)
+		ListAllPost.CommentCount = count
+		count = Controller.SocialDB.SelectQuotedCount(tmp.ID)
+		ListAllPost.QuotedCount = count
+		count = Controller.SocialDB.SelectStartCount(tmp.ID)
+		ListAllPost.StartCount = count
+
+		UserPostInfo = append(UserPostInfo, ListAllPost)
+	}
+
+	var UserInfoResult result.UserInfoResult
+	UserInfoResult.UserInfo = UserInfo
+	UserInfoResult.PostInfo = UserPostInfo
+	JSONSuccess(ctx, http.StatusOK, UserInfoResult)
+}
