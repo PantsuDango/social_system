@@ -188,7 +188,8 @@ func (Controller Controller) ModifyUser(ctx *gin.Context, user tables.User) {
 		user.HeadImage = UserInfoParams.HeadImage
 	}
 	if len(UserInfoParams.Password) > 0 {
-		if (UserInfoParams.OldPassword + user.Salt) == user.Password {
+		s := UserInfoParams.OldPassword + user.Salt
+		if fmt.Sprintf("%x", md5.Sum([]byte(s))) == user.Password {
 			user.Salt = GetRandomString(8)
 			s := UserInfoParams.Password + user.Salt
 			user.Password = fmt.Sprintf("%x", md5.Sum([]byte(s)))
