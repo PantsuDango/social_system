@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"crypto/md5"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
@@ -156,4 +158,57 @@ func (Controller Controller) UserInfo(ctx *gin.Context, user tables.User) {
 	UserInfoResult.UserInfo = UserInfo
 	UserInfoResult.PostInfo = UserPostInfo
 	JSONSuccess(ctx, http.StatusOK, UserInfoResult)
+}
+
+// 公共大厅查询所有帖子
+func (Controller Controller) ModifyUser(ctx *gin.Context, user tables.User) {
+
+	var UserInfoParams params.UserInfoParams
+	if err := ctx.ShouldBindBodyWith(&UserInfoParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	if UserInfoParams.Sex > 0 && user.Sex == 0 {
+		user.Sex = UserInfoParams.Sex
+	}
+	if len(UserInfoParams.Nick) > 0 {
+		user.Nick = UserInfoParams.Nick
+	}
+	if len(UserInfoParams.Phone) > 0 {
+		user.Phone = UserInfoParams.Phone
+	}
+	if len(UserInfoParams.Email) > 0 {
+		user.Email = UserInfoParams.Email
+	}
+	if len(UserInfoParams.HeadImage) > 0 {
+		user.HeadImage = UserInfoParams.HeadImage
+	}
+	if len(UserInfoParams.Password) > 0 {
+		if (UserInfoParams.OldPassword + user.Salt) == user.Password {
+			user.Salt = GetRandomString(8)
+			s := UserInfoParams.Password + user.Salt
+			user.Password = fmt.Sprintf("%x", md5.Sum([]byte(s)))
+		} else {
+			JSONFail(ctx, http.StatusOK, PasswordError, "OldPassword error.", gin.H{
+				"Code":    "InvalidJSON",
+				"Message": "OldPassword error.",
+			})
+			return
+		}
+	}
+
+	err := Controller.SocialDB.ModifyUser(user)
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "update user error", gin.H{
+			"Code":    AccessDBError,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	JSONSuccess(ctx, http.StatusOK, "Success")
 }

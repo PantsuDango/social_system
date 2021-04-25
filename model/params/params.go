@@ -15,3 +15,13 @@ type ListAllPostParams struct {
 	Offset int `json:"Offset" form:"Offset"`
 	Limit  int `json:"Limit"  form:"Limit"   binding:"required"`
 }
+
+type UserInfoParams struct {
+	Nick        string `json:"Nick"         form:"Nick"`
+	Password    string `json:"Password"     form:"Password"`
+	OldPassword string `json:"OldPassword"  form:"OldPassword"`
+	Sex         int    `json:"Sex"          form:"Sex"`
+	HeadImage   string `json:"HeadImage"    form:"HeadImage"`
+	Email       string `json:"Email"        form:"Email"`
+	Phone       string `json:"Phone"        form:"Phone"`
+}

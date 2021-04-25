@@ -84,3 +84,8 @@ func (SocialDB) SelectUserPost(user_id int) []tables.Post {
 	exeDB.Where(`user_id = ?`, user_id).Find(&post)
 	return post
 }
+
+func (SocialDB) ModifyUser(user tables.User) error {
+	err := exeDB.Save(&user).Error
+	return err
+}
