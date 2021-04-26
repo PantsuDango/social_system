@@ -25,3 +25,7 @@ type UserInfoParams struct {
 	Email       string `json:"Email"        form:"Email"`
 	Phone       string `json:"Phone"        form:"Phone"`
 }
+
+type ShowUserInfoParams struct {
+	ID int `json:"ID"  form:"ID"  binding:"required"`
+}

@@ -213,3 +213,69 @@ func (Controller Controller) ModifyUser(ctx *gin.Context, user tables.User) {
 
 	JSONSuccess(ctx, http.StatusOK, "Success")
 }
+
+// 个人信息
+func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
+
+	var UserInfoParams params.ShowUserInfoParams
+	if err := ctx.ShouldBindBodyWith(&UserInfoParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	user_info, err := Controller.SocialDB.QueryUserById(UserInfoParams.ID)
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "select user error", gin.H{
+			"Code":    AccessDBError,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	var UserInfo result.UserInfo
+	UserInfo.ID = user_info.ID
+	UserInfo.Nick = user_info.Nick
+	UserInfo.Username = user_info.Username
+	UserInfo.Email = user_info.Email
+	UserInfo.Phone = user_info.Phone
+	UserInfo.HeadImage = user_info.HeadImage
+	UserInfo.Sex = user_info.Sex
+	count := Controller.SocialDB.SelectAttentionCount(UserInfoParams.ID)
+	UserInfo.AttentionCount = count
+
+	var UserPostInfo []result.UserPostInfo
+	UserPostInfo = make([]result.UserPostInfo, 0)
+	post := Controller.SocialDB.SelectUserPost(user_info.ID)
+	for _, tmp := range post {
+		var ListAllPost result.UserPostInfo
+		ListAllPost.ID = tmp.ID
+		ListAllPost.Title = tmp.Title
+		ListAllPost.Content = tmp.Content
+		ListAllPost.Type = tmp.Type
+		ListAllPost.FromId = tmp.FromId
+		ListAllPost.CreatedAt = tmp.CreatedAt.Format("2006-01-02 15:04:05")
+		ListAllPost.UpdatedAt = tmp.UpdatedAt.Format("2006-01-02 15:04:05")
+		ListAllPost.PictureUrl = make([]string, 0)
+		post_picture_map := Controller.SocialDB.SelectPostPictureMap(tmp.ID)
+		for _, val := range post_picture_map {
+			ListAllPost.PictureUrl = append(ListAllPost.PictureUrl, val.PictureUrl)
+		}
+
+		count = Controller.SocialDB.SelectCommentCount(tmp.ID)
+		ListAllPost.CommentCount = count
+		count = Controller.SocialDB.SelectQuotedCount(tmp.ID)
+		ListAllPost.QuotedCount = count
+		count = Controller.SocialDB.SelectStartCount(tmp.ID)
+		ListAllPost.StartCount = count
+
+		UserPostInfo = append(UserPostInfo, ListAllPost)
+	}
+
+	var UserInfoResult result.UserInfoResult
+	UserInfoResult.UserInfo = UserInfo
+	UserInfoResult.PostInfo = UserPostInfo
+	JSONSuccess(ctx, http.StatusOK, UserInfoResult)
+}
