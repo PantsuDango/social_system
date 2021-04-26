@@ -109,3 +109,17 @@ func (SocialDB) SelectPostCommentMap(post_id int) []tables.PostCommentMap {
 	exeDB.Where(`post_id = ?`, post_id).Find(&post_comment_map)
 	return post_comment_map
 }
+
+func (SocialDB) SelectPostStarMap(post_id, user_id int) (tables.PostStarMap, error) {
+	var post_star_map tables.PostStarMap
+	err := exeDB.Where(`post_id = ? and user_id = ?`, post_id, user_id).First(&post_star_map).Error
+	return post_star_map, err
+}
+
+func (SocialDB) DeletePostStarMap(post_star_map tables.PostStarMap) {
+	exeDB.Delete(&post_star_map)
+}
+
+func (SocialDB) CreatePostStarMap(post_star_map tables.PostStarMap) {
+	exeDB.Create(&post_star_map)
+}

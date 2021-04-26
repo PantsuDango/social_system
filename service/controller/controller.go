@@ -386,3 +386,27 @@ func (Controller Controller) ShowPost(ctx *gin.Context, user tables.User) {
 
 	JSONSuccess(ctx, http.StatusOK, ShowPost)
 }
+
+// 点赞帖子
+func (Controller Controller) AddStar(ctx *gin.Context, user tables.User) {
+
+	var ShowUserInfoParams params.ShowUserInfoParams
+	if err := ctx.ShouldBindBodyWith(&ShowUserInfoParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	post_star_map, err := Controller.SocialDB.SelectPostStarMap(ShowUserInfoParams.ID, user.ID)
+	if err == nil && post_star_map.ID > 0 {
+		Controller.SocialDB.DeletePostStarMap(post_star_map)
+	} else {
+		post_star_map.UserId = user.ID
+		post_star_map.PostId = ShowUserInfoParams.ID
+		Controller.SocialDB.CreatePostStarMap(post_star_map)
+	}
+
+	JSONSuccess(ctx, http.StatusOK, "Success")
+}
