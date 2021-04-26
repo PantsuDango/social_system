@@ -83,3 +83,17 @@ func (SocialDB) ModifyUser(user tables.User) error {
 	err := exeDB.Save(&user).Error
 	return err
 }
+
+func (SocialDB) SelectUserAttentionMap(user_id, follower_id int) (tables.UserAttentionMap, error) {
+	var user_attention_map tables.UserAttentionMap
+	err := exeDB.Where(`user_id = ? and follower_id = ?`, user_id, follower_id).First(&user_attention_map).Error
+	return user_attention_map, err
+}
+
+func (SocialDB) DeleteUserAttentionMap(user_attention_map tables.UserAttentionMap) {
+	exeDB.Delete(&user_attention_map)
+}
+
+func (SocialDB) CreateUserAttentionMap(user_attention_map tables.UserAttentionMap) {
+	exeDB.Create(&user_attention_map)
+}

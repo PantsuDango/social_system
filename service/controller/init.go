@@ -60,6 +60,7 @@ func init() {
 		"Controller.UserInfo":     Controller.UserInfo,
 		"Controller.ModifyUser":   Controller.ModifyUser,
 		"Controller.ShowUserInfo": Controller.ShowUserInfo,
+		"Controller.AddAttention": Controller.AddAttention,
 	}
 }
 

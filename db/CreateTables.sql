@@ -62,7 +62,8 @@ CREATE TABLE `post_star_map` (
    `post_id` int(11) NOT NULL COMMENT '帖子id',
    `user_id` int(11) NOT NULL COMMENT '点赞人',
    `createtime` datetime NOT NULL COMMENT '创建时间',
-   PRIMARY KEY (`id`)
+   PRIMARY KEY (`id`),
+   UNIQUE KEY (`post_id`, `user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='帖子点赞映射表';
 
 

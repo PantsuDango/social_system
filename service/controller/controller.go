@@ -214,11 +214,11 @@ func (Controller Controller) ModifyUser(ctx *gin.Context, user tables.User) {
 	JSONSuccess(ctx, http.StatusOK, "Success")
 }
 
-// 个人信息
+// 浏览别人信息
 func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 
-	var UserInfoParams params.ShowUserInfoParams
-	if err := ctx.ShouldBindBodyWith(&UserInfoParams, binding.JSON); err != nil {
+	var ShowUserInfoParams params.ShowUserInfoParams
+	if err := ctx.ShouldBindBodyWith(&ShowUserInfoParams, binding.JSON); err != nil {
 		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
 			"Code":    IllegalRequestParameter,
 			"Message": err.Error(),
@@ -226,7 +226,7 @@ func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 		return
 	}
 
-	user_info, err := Controller.SocialDB.QueryUserById(UserInfoParams.ID)
+	user_info, err := Controller.SocialDB.QueryUserById(ShowUserInfoParams.ID)
 	if err != nil {
 		JSONFail(ctx, http.StatusOK, AccessDBError, "select user error", gin.H{
 			"Code":    AccessDBError,
@@ -243,7 +243,7 @@ func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 	UserInfo.Phone = user_info.Phone
 	UserInfo.HeadImage = user_info.HeadImage
 	UserInfo.Sex = user_info.Sex
-	count := Controller.SocialDB.SelectAttentionCount(UserInfoParams.ID)
+	count := Controller.SocialDB.SelectAttentionCount(ShowUserInfoParams.ID)
 	UserInfo.AttentionCount = count
 
 	var UserPostInfo []result.UserPostInfo
@@ -278,4 +278,36 @@ func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 	UserInfoResult.UserInfo = UserInfo
 	UserInfoResult.PostInfo = UserPostInfo
 	JSONSuccess(ctx, http.StatusOK, UserInfoResult)
+}
+
+// 关注别人
+func (Controller Controller) AddAttention(ctx *gin.Context, user tables.User) {
+
+	var ShowUserInfoParams params.ShowUserInfoParams
+	if err := ctx.ShouldBindBodyWith(&ShowUserInfoParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	if ShowUserInfoParams.ID == user.ID {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "You can't pay attention to yourself", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": "You can't pay attention to yourself",
+		})
+		return
+	}
+
+	user_attention_map, err := Controller.SocialDB.SelectUserAttentionMap(ShowUserInfoParams.ID, user.ID)
+	if err == nil && user_attention_map.ID > 0 {
+		Controller.SocialDB.DeleteUserAttentionMap(user_attention_map)
+	} else {
+		user_attention_map.UserId = ShowUserInfoParams.ID
+		user_attention_map.FollowerId = user.ID
+		Controller.SocialDB.CreateUserAttentionMap(user_attention_map)
+	}
+
+	JSONSuccess(ctx, http.StatusOK, "Success")
 }
