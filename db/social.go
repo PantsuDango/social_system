@@ -97,3 +97,15 @@ func (SocialDB) DeleteUserAttentionMap(user_attention_map tables.UserAttentionMa
 func (SocialDB) CreateUserAttentionMap(user_attention_map tables.UserAttentionMap) {
 	exeDB.Create(&user_attention_map)
 }
+
+func (SocialDB) SelectPostInfo(id int) (tables.Post, error) {
+	var post tables.Post
+	err := exeDB.Where(`id = ?`, id).First(&post).Error
+	return post, err
+}
+
+func (SocialDB) SelectPostCommentMap(post_id int) []tables.PostCommentMap {
+	var post_comment_map []tables.PostCommentMap
+	exeDB.Where(`post_id = ?`, post_id).Find(&post_comment_map)
+	return post_comment_map
+}

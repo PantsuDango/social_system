@@ -49,3 +49,25 @@ type UserPostInfo struct {
 	QuotedCount  int      `json:"QuotedCount"     form:"QuotedCount"`
 	StartCount   int      `json:"StartCount"      form:"StartCount"`
 }
+
+type ShowPost struct {
+	ID           int           `json:"ID"              form:"ID"`
+	Title        string        `json:"Title"           form:"Title"`
+	Content      string        `json:"Content"         form:"Content"`
+	PictureUrl   []string      `json:"PictureUrl"      form:"PictureUrl"`
+	Type         int           `json:"Type"            form:"Type"`
+	FromId       int           `json:"FromId"          form:"FromId"`
+	CreatedAt    string        `json:"CreateTime"      form:"CreateTime"`
+	UpdatedAt    string        `json:"UpdateTime"      form:"UpdateTime"`
+	UserInfo     UserInfo      `json:"UserInfo"        form:"UserInfo"`
+	CommentCount int           `json:"CommentCount"    form:"CommentCount"`
+	QuotedCount  int           `json:"QuotedCount"     form:"QuotedCount"`
+	StartCount   int           `json:"StartCount"      form:"StartCount"`
+	CommentInfo  []CommentInfo `json:"CommentInfo"     form:"CommentInfo"`
+}
+
+type CommentInfo struct {
+	Content   string   `json:"Content"     form:"Content"`
+	CreatedAt string   `json:"CreateTime"  form:"CreateTime"`
+	UserInfo  UserInfo `json:"UserInfo"    form:"UserInfo"`
+}

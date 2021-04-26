@@ -311,3 +311,78 @@ func (Controller Controller) AddAttention(ctx *gin.Context, user tables.User) {
 
 	JSONSuccess(ctx, http.StatusOK, "Success")
 }
+
+// 查看某帖子详细信息
+func (Controller Controller) ShowPost(ctx *gin.Context, user tables.User) {
+
+	var ShowUserInfoParams params.ShowUserInfoParams
+	if err := ctx.ShouldBindBodyWith(&ShowUserInfoParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	post, err := Controller.SocialDB.SelectPostInfo(ShowUserInfoParams.ID)
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "select post error", gin.H{
+			"Code":    AccessDBError,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	var ShowPost result.ShowPost
+	ShowPost.PictureUrl = make([]string, 0)
+	ShowPost.CommentInfo = make([]result.CommentInfo, 0)
+
+	ShowPost.ID = post.ID
+	ShowPost.Title = post.Title
+	ShowPost.Content = post.Content
+	ShowPost.Type = post.Type
+	ShowPost.FromId = post.FromId
+	ShowPost.CreatedAt = post.CreatedAt.Format("2006-01-02 15:04:05")
+	ShowPost.UpdatedAt = post.UpdatedAt.Format("2006-01-02 15:04:05")
+	ShowPost.PictureUrl = make([]string, 0)
+	post_picture_map := Controller.SocialDB.SelectPostPictureMap(post.ID)
+	for _, val := range post_picture_map {
+		ShowPost.PictureUrl = append(ShowPost.PictureUrl, val.PictureUrl)
+	}
+
+	people, _ := Controller.SocialDB.QueryUserById(post.UserId)
+	ShowPost.UserInfo.ID = people.ID
+	ShowPost.UserInfo.Nick = people.Nick
+	ShowPost.UserInfo.Username = people.Username
+	ShowPost.UserInfo.Email = people.Email
+	ShowPost.UserInfo.Phone = people.Phone
+	ShowPost.UserInfo.HeadImage = people.HeadImage
+	ShowPost.UserInfo.Sex = people.Sex
+
+	count := Controller.SocialDB.SelectCommentCount(post.ID)
+	ShowPost.CommentCount = count
+	count = Controller.SocialDB.SelectQuotedCount(post.ID)
+	ShowPost.QuotedCount = count
+	count = Controller.SocialDB.SelectStartCount(post.ID)
+	ShowPost.StartCount = count
+
+	post_comment_map := Controller.SocialDB.SelectPostCommentMap(post.ID)
+	for _, tmp := range post_comment_map {
+		var CommentInfo result.CommentInfo
+		CommentInfo.Content = tmp.Content
+		CommentInfo.CreatedAt = tmp.CreatedAt.Format("2006-01-02 15:04:05")
+
+		people, _ := Controller.SocialDB.QueryUserById(tmp.UserId)
+		CommentInfo.UserInfo.ID = people.ID
+		CommentInfo.UserInfo.Nick = people.Nick
+		CommentInfo.UserInfo.Username = people.Username
+		CommentInfo.UserInfo.Email = people.Email
+		CommentInfo.UserInfo.Phone = people.Phone
+		CommentInfo.UserInfo.HeadImage = people.HeadImage
+		CommentInfo.UserInfo.Sex = people.Sex
+
+		ShowPost.CommentInfo = append(ShowPost.CommentInfo, CommentInfo)
+	}
+
+	JSONSuccess(ctx, http.StatusOK, ShowPost)
+}
