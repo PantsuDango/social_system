@@ -123,3 +123,7 @@ func (SocialDB) DeletePostStarMap(post_star_map tables.PostStarMap) {
 func (SocialDB) CreatePostStarMap(post_star_map tables.PostStarMap) {
 	exeDB.Create(&post_star_map)
 }
+
+func (SocialDB) CreatePostCommentMap(post_comment_map tables.PostCommentMap) {
+	exeDB.Create(&post_comment_map)
+}

@@ -67,6 +67,7 @@ type ShowPost struct {
 }
 
 type CommentInfo struct {
+	ID        int      `json:"ID"          form:"ID"`
 	Content   string   `json:"Content"     form:"Content"`
 	CreatedAt string   `json:"CreateTime"  form:"CreateTime"`
 	UserInfo  UserInfo `json:"UserInfo"    form:"UserInfo"`

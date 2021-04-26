@@ -369,6 +369,7 @@ func (Controller Controller) ShowPost(ctx *gin.Context, user tables.User) {
 	post_comment_map := Controller.SocialDB.SelectPostCommentMap(post.ID)
 	for _, tmp := range post_comment_map {
 		var CommentInfo result.CommentInfo
+		CommentInfo.ID = tmp.ID
 		CommentInfo.Content = tmp.Content
 		CommentInfo.CreatedAt = tmp.CreatedAt.Format("2006-01-02 15:04:05")
 
@@ -407,6 +408,36 @@ func (Controller Controller) AddStar(ctx *gin.Context, user tables.User) {
 		post_star_map.PostId = ShowUserInfoParams.ID
 		Controller.SocialDB.CreatePostStarMap(post_star_map)
 	}
+
+	JSONSuccess(ctx, http.StatusOK, "Success")
+}
+
+// 点赞帖子
+func (Controller Controller) AddComment(ctx *gin.Context, user tables.User) {
+
+	var AddCommentParams params.AddCommentParams
+	if err := ctx.ShouldBindBodyWith(&AddCommentParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	_, err := Controller.SocialDB.SelectPostInfo(AddCommentParams.ID)
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "select post error", gin.H{
+			"Code":    AccessDBError,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	var post_comment_map tables.PostCommentMap
+	post_comment_map.PostId = AddCommentParams.ID
+	post_comment_map.Content = AddCommentParams.Content
+	post_comment_map.UserId = user.ID
+	Controller.SocialDB.CreatePostCommentMap(post_comment_map)
 
 	JSONSuccess(ctx, http.StatusOK, "Success")
 }

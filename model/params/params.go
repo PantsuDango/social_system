@@ -29,3 +29,8 @@ type UserInfoParams struct {
 type ShowUserInfoParams struct {
 	ID int `json:"ID"  form:"ID"  binding:"required"`
 }
+
+type AddCommentParams struct {
+	ID      int    `json:"ID"       form:"ID"       binding:"required"`
+	Content string `json:"content"  form:"content"  binding:"required"`
+}
