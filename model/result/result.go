@@ -17,7 +17,7 @@ type PostInfo struct {
 	UserInfo     UserInfo `json:"UserInfo"        form:"UserInfo"`
 	CommentCount int      `json:"CommentCount"    form:"CommentCount"`
 	QuotedCount  int      `json:"QuotedCount"     form:"QuotedCount"`
-	StartCount   int      `json:"StartCount"      form:"StartCount"`
+	StarCount    int      `json:"StarCount"       form:"StarCount"`
 }
 
 type UserInfo struct {
@@ -47,7 +47,7 @@ type UserPostInfo struct {
 	UpdatedAt    string   `json:"UpdateTime"      form:"UpdateTime"`
 	CommentCount int      `json:"CommentCount"    form:"CommentCount"`
 	QuotedCount  int      `json:"QuotedCount"     form:"QuotedCount"`
-	StartCount   int      `json:"StartCount"      form:"StartCount"`
+	StarCount    int      `json:"StarCount"       form:"StarCount"`
 }
 
 type ShowPost struct {
@@ -62,7 +62,7 @@ type ShowPost struct {
 	UserInfo     UserInfo      `json:"UserInfo"        form:"UserInfo"`
 	CommentCount int           `json:"CommentCount"    form:"CommentCount"`
 	QuotedCount  int           `json:"QuotedCount"     form:"QuotedCount"`
-	StartCount   int           `json:"StartCount"      form:"StartCount"`
+	StarCount    int           `json:"StarCount"       form:"StarCount"`
 	CommentInfo  []CommentInfo `json:"CommentInfo"     form:"CommentInfo"`
 }
 

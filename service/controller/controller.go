@@ -99,7 +99,7 @@ func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
 		count = Controller.SocialDB.SelectQuotedCount(tmp.ID)
 		ListAllPost.QuotedCount = count
 		count = Controller.SocialDB.SelectStartCount(tmp.ID)
-		ListAllPost.StartCount = count
+		ListAllPost.StarCount = count
 
 		PostInfo = append(PostInfo, ListAllPost)
 	}
@@ -149,7 +149,7 @@ func (Controller Controller) UserInfo(ctx *gin.Context, user tables.User) {
 		count = Controller.SocialDB.SelectQuotedCount(tmp.ID)
 		ListAllPost.QuotedCount = count
 		count = Controller.SocialDB.SelectStartCount(tmp.ID)
-		ListAllPost.StartCount = count
+		ListAllPost.StarCount = count
 
 		UserPostInfo = append(UserPostInfo, ListAllPost)
 	}
@@ -269,7 +269,7 @@ func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 		count = Controller.SocialDB.SelectQuotedCount(tmp.ID)
 		ListAllPost.QuotedCount = count
 		count = Controller.SocialDB.SelectStartCount(tmp.ID)
-		ListAllPost.StartCount = count
+		ListAllPost.StarCount = count
 
 		UserPostInfo = append(UserPostInfo, ListAllPost)
 	}
@@ -364,7 +364,7 @@ func (Controller Controller) ShowPost(ctx *gin.Context, user tables.User) {
 	count = Controller.SocialDB.SelectQuotedCount(post.ID)
 	ShowPost.QuotedCount = count
 	count = Controller.SocialDB.SelectStartCount(post.ID)
-	ShowPost.StartCount = count
+	ShowPost.StarCount = count
 
 	post_comment_map := Controller.SocialDB.SelectPostCommentMap(post.ID)
 	for _, tmp := range post_comment_map {
