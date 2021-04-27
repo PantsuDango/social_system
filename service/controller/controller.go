@@ -447,13 +447,14 @@ func (Controller Controller) AddStar(ctx *gin.Context, user tables.User) {
 	post_star_map, err := Controller.SocialDB.SelectPostStarMap(ShowUserInfoParams.ID, user.ID)
 	if err == nil && post_star_map.ID > 0 {
 		Controller.SocialDB.DeletePostStarMap(post_star_map)
+		JSONSuccess(ctx, http.StatusOK, "UnSuccess")
 	} else {
 		post_star_map.UserId = user.ID
 		post_star_map.PostId = ShowUserInfoParams.ID
 		Controller.SocialDB.CreatePostStarMap(post_star_map)
+		JSONSuccess(ctx, http.StatusOK, "Success")
 	}
 
-	JSONSuccess(ctx, http.StatusOK, "Success")
 }
 
 // 点赞帖子
@@ -521,7 +522,7 @@ func (Controller Controller) AddQuoted(ctx *gin.Context, user tables.User) {
 	}
 
 	post_info, err := Controller.SocialDB.SelectPostInfo(AddQuotedParams.ID)
-	if err != nil {
+	if err != nil || post_info.UserId == user.ID {
 		JSONFail(ctx, http.StatusOK, AccessDBError, "select post error", gin.H{
 			"Code":    AccessDBError,
 			"Message": err.Error(),
