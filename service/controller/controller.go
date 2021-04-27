@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"social_system/model/params"
 	"social_system/model/result"
@@ -245,6 +246,12 @@ func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 	UserInfo.Sex = user_info.Sex
 	count := Controller.SocialDB.SelectAttentionCount(ShowUserInfoParams.ID)
 	UserInfo.AttentionCount = count
+	_, err = Controller.SocialDB.SelectUserAttentionMap(ShowUserInfoParams.ID, user.ID)
+	if err == gorm.ErrRecordNotFound {
+		UserInfo.IsAttention = false
+	} else {
+		UserInfo.IsAttention = true
+	}
 
 	var UserPostInfo []result.UserPostInfo
 	UserPostInfo = make([]result.UserPostInfo, 0)

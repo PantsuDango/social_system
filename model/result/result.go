@@ -29,6 +29,7 @@ type UserInfo struct {
 	Email          string `json:"Email"           form:"Email"`
 	Phone          string `json:"Phone"           form:"Phone"`
 	AttentionCount int    `json:"AttentionCount"  form:"AttentionCount"`
+	IsAttention    bool   `json:"IsAttention"     form:"IsAttention"`
 }
 
 type UserInfoResult struct {
