@@ -18,6 +18,7 @@ type PostInfo struct {
 	CommentCount int      `json:"CommentCount"    form:"CommentCount"`
 	QuotedCount  int      `json:"QuotedCount"     form:"QuotedCount"`
 	StarCount    int      `json:"StarCount"       form:"StarCount"`
+	IsStar       bool     `json:"IsStar"          form:"IsStar"`
 }
 
 type UserInfo struct {
@@ -69,6 +70,7 @@ type UserPostInfo struct {
 	CommentCount int      `json:"CommentCount"    form:"CommentCount"`
 	QuotedCount  int      `json:"QuotedCount"     form:"QuotedCount"`
 	StarCount    int      `json:"StarCount"       form:"StarCount"`
+	IsStar       bool     `json:"IsStar"          form:"IsStar"`
 }
 
 type ShowPost struct {

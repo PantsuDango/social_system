@@ -73,6 +73,12 @@ func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
 	post := Controller.SocialDB.SelectAllPost(ListAllPostParams.Offset, ListAllPostParams.Limit)
 	for _, tmp := range post {
 		var ListAllPost result.PostInfo
+		_, err := Controller.SocialDB.SelectPostStarMap(tmp.ID, user.ID)
+		if err == gorm.ErrRecordNotFound {
+			ListAllPost.IsStar = false
+		} else {
+			ListAllPost.IsStar = true
+		}
 		ListAllPost.ID = tmp.ID
 		ListAllPost.Title = tmp.Title
 		ListAllPost.Content = tmp.Content
@@ -145,6 +151,12 @@ func (Controller Controller) UserInfo(ctx *gin.Context, user tables.User) {
 	post := Controller.SocialDB.SelectUserPost(user.ID, ListAllPostParams.Offset, ListAllPostParams.Limit)
 	for _, tmp := range post {
 		var ListAllPost result.UserPostInfo
+		_, err := Controller.SocialDB.SelectPostStarMap(tmp.ID, user.ID)
+		if err == gorm.ErrRecordNotFound {
+			ListAllPost.IsStar = false
+		} else {
+			ListAllPost.IsStar = true
+		}
 		ListAllPost.ID = tmp.ID
 		ListAllPost.Title = tmp.Title
 		ListAllPost.Content = tmp.Content
@@ -277,6 +289,12 @@ func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 	post := Controller.SocialDB.SelectUserPost(user_info.ID, ShowUserInfoParams.Offset, ShowUserInfoParams.Limit)
 	for _, tmp := range post {
 		var ListAllPost result.UserPostInfo
+		_, err := Controller.SocialDB.SelectPostStarMap(tmp.ID, user.ID)
+		if err == gorm.ErrRecordNotFound {
+			ListAllPost.IsStar = false
+		} else {
+			ListAllPost.IsStar = true
+		}
 		ListAllPost.ID = tmp.ID
 		ListAllPost.Title = tmp.Title
 		ListAllPost.Content = tmp.Content
