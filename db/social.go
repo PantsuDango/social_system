@@ -87,7 +87,7 @@ func (SocialDB) SelectUserPost(user_id, offset, limit int) []tables.Post {
 
 func (SocialDB) SelectUserPostCount(user_id int) int {
 	var count int
-	exeDB.Where(`user_id = ?`, user_id).Count(&count)
+	exeDB.Model(&[]tables.Post{}).Where(`user_id = ?`, user_id).Count(&count)
 	return count
 }
 
