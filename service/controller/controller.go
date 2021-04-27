@@ -116,7 +116,16 @@ func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
 // 个人信息
 func (Controller Controller) UserInfo(ctx *gin.Context, user tables.User) {
 
-	var UserInfo result.UserInfo
+	var ListAllPostParams params.ListAllPostParams
+	if err := ctx.ShouldBindBodyWith(&ListAllPostParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	var UserInfo result.PersonalUserInfo
 	UserInfo.ID = user.ID
 	UserInfo.Nick = user.Nick
 	UserInfo.Username = user.Username
@@ -124,12 +133,16 @@ func (Controller Controller) UserInfo(ctx *gin.Context, user tables.User) {
 	UserInfo.Phone = user.Phone
 	UserInfo.HeadImage = user.HeadImage
 	UserInfo.Sex = user.Sex
-	count := Controller.SocialDB.SelectAttentionCount(user.ID)
+	// 我关注的用户数
+	count := Controller.SocialDB.SelectAttentionCountByFollowerId(user.ID)
 	UserInfo.AttentionCount = count
+	// 我的帖子总数
+	count = Controller.SocialDB.SelectUserPostCount(user.ID)
+	UserInfo.PostCount = count
 
 	var UserPostInfo []result.UserPostInfo
 	UserPostInfo = make([]result.UserPostInfo, 0)
-	post := Controller.SocialDB.SelectUserPost(user.ID)
+	post := Controller.SocialDB.SelectUserPost(user.ID, ListAllPostParams.Offset, ListAllPostParams.Limit)
 	for _, tmp := range post {
 		var ListAllPost result.UserPostInfo
 		ListAllPost.ID = tmp.ID
@@ -144,18 +157,22 @@ func (Controller Controller) UserInfo(ctx *gin.Context, user tables.User) {
 		for _, val := range post_picture_map {
 			ListAllPost.PictureUrl = append(ListAllPost.PictureUrl, val.PictureUrl)
 		}
-
+		// 帖子评论数
 		count = Controller.SocialDB.SelectCommentCount(tmp.ID)
+		UserInfo.CommentCount += count
 		ListAllPost.CommentCount = count
+		// 帖子转发数
 		count = Controller.SocialDB.SelectQuotedCount(tmp.ID)
 		ListAllPost.QuotedCount = count
+		// 帖子点赞数
 		count = Controller.SocialDB.SelectStartCount(tmp.ID)
+		UserInfo.StarCount += count
 		ListAllPost.StarCount = count
 
 		UserPostInfo = append(UserPostInfo, ListAllPost)
 	}
 
-	var UserInfoResult result.UserInfoResult
+	var UserInfoResult result.PersonalUserInfoResult
 	UserInfoResult.UserInfo = UserInfo
 	UserInfoResult.PostInfo = UserPostInfo
 	JSONSuccess(ctx, http.StatusOK, UserInfoResult)
@@ -252,10 +269,12 @@ func (Controller Controller) ShowUserInfo(ctx *gin.Context, user tables.User) {
 	} else {
 		UserInfo.IsAttention = true
 	}
+	count = Controller.SocialDB.SelectUserPostCount(user_info.ID)
+	UserInfo.PostCount = count
 
 	var UserPostInfo []result.UserPostInfo
 	UserPostInfo = make([]result.UserPostInfo, 0)
-	post := Controller.SocialDB.SelectUserPost(user_info.ID)
+	post := Controller.SocialDB.SelectUserPost(user_info.ID, ShowUserInfoParams.Offset, ShowUserInfoParams.Limit)
 	for _, tmp := range post {
 		var ListAllPost result.UserPostInfo
 		ListAllPost.ID = tmp.ID

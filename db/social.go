@@ -73,10 +73,22 @@ func (SocialDB) SelectAttentionCount(user_id int) int {
 	return count
 }
 
-func (SocialDB) SelectUserPost(user_id int) []tables.Post {
+func (SocialDB) SelectAttentionCountByFollowerId(follower_id int) int {
+	var count int
+	exeDB.Model(&tables.UserAttentionMap{}).Where(`follower_id = ?`, follower_id).Count(&count)
+	return count
+}
+
+func (SocialDB) SelectUserPost(user_id, offset, limit int) []tables.Post {
 	var post []tables.Post
-	exeDB.Where(`user_id = ?`, user_id).Find(&post)
+	exeDB.Where(`user_id = ?`, user_id).Offset(offset).Limit(limit).Order(`createtime desc`).Find(&post)
 	return post
+}
+
+func (SocialDB) SelectUserPostCount(user_id int) int {
+	var count int
+	exeDB.Where(`user_id = ?`, user_id).Count(&count)
+	return count
 }
 
 func (SocialDB) ModifyUser(user tables.User) error {

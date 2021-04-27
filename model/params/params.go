@@ -27,7 +27,9 @@ type UserInfoParams struct {
 }
 
 type ShowUserInfoParams struct {
-	ID int `json:"ID"  form:"ID"  binding:"required"`
+	ID     int `json:"ID"     form:"ID"      binding:"required"`
+	Offset int `json:"Offset" form:"Offset"`
+	Limit  int `json:"Limit"  form:"Limit"   binding:"required"`
 }
 
 type AddCommentParams struct {
