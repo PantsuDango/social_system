@@ -435,7 +435,7 @@ func (Controller Controller) ShowPost(ctx *gin.Context, user tables.User) {
 // 点赞帖子
 func (Controller Controller) AddStar(ctx *gin.Context, user tables.User) {
 
-	var ShowUserInfoParams params.ShowUserInfoParams
+	var ShowUserInfoParams params.AddQuotedParams
 	if err := ctx.ShouldBindBodyWith(&ShowUserInfoParams, binding.JSON); err != nil {
 		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
 			"Code":    IllegalRequestParameter,
@@ -506,4 +506,60 @@ func (Controller Controller) ShowUserAttention(ctx *gin.Context, user tables.Use
 	}
 
 	JSONSuccess(ctx, http.StatusOK, ShowUserAttentionResult)
+}
+
+// 转发帖子
+func (Controller Controller) AddQuoted(ctx *gin.Context, user tables.User) {
+
+	var AddQuotedParams params.AddQuotedParams
+	if err := ctx.ShouldBindBodyWith(&AddQuotedParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	post_info, err := Controller.SocialDB.SelectPostInfo(AddQuotedParams.ID)
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "select post error", gin.H{
+			"Code":    AccessDBError,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	var post tables.Post
+	post.Title = post_info.Title
+	post.Content = post_info.Content
+	post.UserId = user.ID
+	post.Type = 1
+	post.FromId = post_info.UserId
+	err = Controller.SocialDB.CreatePost(&post)
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "create post error", gin.H{
+			"Code":    AccessDBError,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	post_picture_maps := Controller.SocialDB.SelectPostPictureMap(post_info.ID)
+	if len(post_picture_maps) > 0 {
+		var post_picture_map tables.PostPictureMap
+		for _, tmp := range post_picture_maps {
+			post_picture_map.PostId = post.ID
+			post_picture_map.PictureUrl = tmp.PictureUrl
+			err = Controller.SocialDB.CreatePostPictureMap(post_picture_map)
+		}
+		if err != nil {
+			JSONFail(ctx, http.StatusOK, AccessDBError, "create post_picture_map error", gin.H{
+				"Code":    AccessDBError,
+				"Message": err.Error(),
+			})
+			return
+		}
+	}
+
+	JSONSuccess(ctx, http.StatusOK, "Success")
 }

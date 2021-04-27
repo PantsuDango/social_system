@@ -36,3 +36,7 @@ type AddCommentParams struct {
 	ID      int    `json:"ID"       form:"ID"       binding:"required"`
 	Content string `json:"content"  form:"content"  binding:"required"`
 }
+
+type AddQuotedParams struct {
+	ID int `json:"ID"       form:"ID"       binding:"required"`
+}

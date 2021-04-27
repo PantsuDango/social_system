@@ -65,6 +65,7 @@ func init() {
 		"Controller.AddStar":           Controller.AddStar,
 		"Controller.AddComment":        Controller.AddComment,
 		"Controller.ShowUserAttention": Controller.ShowUserAttention,
+		"Controller.AddQuoted":         Controller.AddQuoted,
 	}
 }
 
