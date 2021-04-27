@@ -388,6 +388,14 @@ func (Controller Controller) ShowPost(ctx *gin.Context, user tables.User) {
 	ShowPost.FromId = post.FromId
 	ShowPost.CreatedAt = post.CreatedAt.Format("2006-01-02 15:04:05")
 	ShowPost.UpdatedAt = post.UpdatedAt.Format("2006-01-02 15:04:05")
+
+	_, err = Controller.SocialDB.SelectPostStarMap(post.ID, user.ID)
+	if err == gorm.ErrRecordNotFound {
+		ShowPost.IsStar = false
+	} else {
+		ShowPost.IsStar = true
+	}
+
 	ShowPost.PictureUrl = make([]string, 0)
 	post_picture_map := Controller.SocialDB.SelectPostPictureMap(post.ID)
 	for _, val := range post_picture_map {
