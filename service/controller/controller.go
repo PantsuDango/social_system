@@ -485,3 +485,25 @@ func (Controller Controller) AddComment(ctx *gin.Context, user tables.User) {
 
 	JSONSuccess(ctx, http.StatusOK, "Success")
 }
+
+// 获取关注列表
+func (Controller Controller) ShowUserAttention(ctx *gin.Context, user tables.User) {
+
+	var ShowUserAttentionResult []result.ShowUserAttention
+	ShowUserAttentionResult = make([]result.ShowUserAttention, 0)
+	user_attention_map := Controller.SocialDB.SelectUserAttentionMapByFollowerId(user.ID)
+	for _, tmp := range user_attention_map {
+		var ShowUserAttention result.ShowUserAttention
+		user, _ := Controller.SocialDB.QueryUserById(tmp.UserId)
+		ShowUserAttention.ID = user.ID
+		ShowUserAttention.Username = user.Username
+		ShowUserAttention.Nick = user.Nick
+		ShowUserAttention.Email = user.Email
+		ShowUserAttention.Phone = user.Phone
+		ShowUserAttention.Sex = user.Sex
+		ShowUserAttention.HeadImage = user.HeadImage
+		ShowUserAttentionResult = append(ShowUserAttentionResult, ShowUserAttention)
+	}
+
+	JSONSuccess(ctx, http.StatusOK, ShowUserAttentionResult)
+}

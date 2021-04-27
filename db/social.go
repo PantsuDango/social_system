@@ -139,3 +139,9 @@ func (SocialDB) CreatePostStarMap(post_star_map tables.PostStarMap) {
 func (SocialDB) CreatePostCommentMap(post_comment_map tables.PostCommentMap) {
 	exeDB.Create(&post_comment_map)
 }
+
+func (SocialDB) SelectUserAttentionMapByFollowerId(follower_id int) []tables.UserAttentionMap {
+	var user_attention_map []tables.UserAttentionMap
+	exeDB.Where(`follower_id = ?`, follower_id).Find(&user_attention_map)
+	return user_attention_map
+}

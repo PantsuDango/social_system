@@ -95,3 +95,13 @@ type CommentInfo struct {
 	CreatedAt string   `json:"CreateTime"  form:"CreateTime"`
 	UserInfo  UserInfo `json:"UserInfo"    form:"UserInfo"`
 }
+
+type ShowUserAttention struct {
+	ID        int    `json:"ID"              form:"ID"`
+	Nick      string `json:"Nick"            form:"Nick"`
+	Username  string `json:"Username"        form:"Username"`
+	Sex       int    `json:"Sex"             form:"Sex"`
+	HeadImage string `json:"HeadImage"       form:"HeadImage"`
+	Email     string `json:"Email"           form:"Email"`
+	Phone     string `json:"Phone"           form:"Phone"`
+}
