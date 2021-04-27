@@ -359,7 +359,7 @@ func (Controller Controller) AddAttention(ctx *gin.Context, user tables.User) {
 // 查看某帖子详细信息
 func (Controller Controller) ShowPost(ctx *gin.Context, user tables.User) {
 
-	var ShowUserInfoParams params.ShowUserInfoParams
+	var ShowUserInfoParams params.AddQuotedParams
 	if err := ctx.ShouldBindBodyWith(&ShowUserInfoParams, binding.JSON); err != nil {
 		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
 			"Code":    IllegalRequestParameter,
