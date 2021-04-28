@@ -100,6 +100,12 @@ func (Controller Controller) ListAllPost(ctx *gin.Context, user tables.User) {
 		ListAllPost.UserInfo.Phone = people.Phone
 		ListAllPost.UserInfo.HeadImage = people.HeadImage
 		ListAllPost.UserInfo.Sex = people.Sex
+		_, err = Controller.SocialDB.SelectUserAttentionMap(people.ID, user.ID)
+		if err == gorm.ErrRecordNotFound {
+			ListAllPost.UserInfo.IsAttention = false
+		} else {
+			ListAllPost.UserInfo.IsAttention = true
+		}
 
 		count := Controller.SocialDB.SelectCommentCount(tmp.ID)
 		ListAllPost.CommentCount = count
