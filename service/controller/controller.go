@@ -584,5 +584,10 @@ func (Controller Controller) AddQuoted(ctx *gin.Context, user tables.User) {
 		}
 	}
 
+	var post_quoted_map tables.PostQuotedMap
+	post_quoted_map.UserId = user.ID
+	post_quoted_map.PostId = post_info.ID
+	Controller.SocialDB.CreatePostQuotedMap(post_quoted_map)
+
 	JSONSuccess(ctx, http.StatusOK, "Success")
 }

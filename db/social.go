@@ -145,3 +145,7 @@ func (SocialDB) SelectUserAttentionMapByFollowerId(follower_id int) []tables.Use
 	exeDB.Where(`follower_id = ?`, follower_id).Find(&user_attention_map)
 	return user_attention_map
 }
+
+func (SocialDB) CreatePostQuotedMap(post_quoted_map tables.PostQuotedMap) {
+	exeDB.Create(&post_quoted_map)
+}
