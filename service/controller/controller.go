@@ -539,9 +539,9 @@ func (Controller Controller) AddQuoted(ctx *gin.Context, user tables.User) {
 	}
 
 	if post_info.UserId == user.ID {
-		JSONFail(ctx, http.StatusOK, AccessDBError, "You can't forward your own posts", gin.H{
+		JSONFail(ctx, http.StatusOK, AccessDBError, "不能转发自己的帖子", gin.H{
 			"Code":    AccessDBError,
-			"Message": "You can't forward your own posts",
+			"Message": "不能转发自己的帖子",
 		})
 		return
 	}
