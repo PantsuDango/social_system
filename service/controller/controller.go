@@ -530,10 +530,18 @@ func (Controller Controller) AddQuoted(ctx *gin.Context, user tables.User) {
 	}
 
 	post_info, err := Controller.SocialDB.SelectPostInfo(AddQuotedParams.ID)
-	if err != nil || post_info.UserId == user.ID {
-		JSONFail(ctx, http.StatusOK, AccessDBError, "You can't forward your own posts", gin.H{
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "select post error", gin.H{
 			"Code":    AccessDBError,
 			"Message": err.Error(),
+		})
+		return
+	}
+
+	if post_info.UserId == user.ID {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "You can't forward your own posts", gin.H{
+			"Code":    AccessDBError,
+			"Message": "You can't forward your own posts",
 		})
 		return
 	}
