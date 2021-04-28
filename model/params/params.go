@@ -6,8 +6,8 @@ type ModActIndex struct {
 }
 
 type AddPostParams struct {
-	Title      string   `json:"Title"       form:"Title"       binding:"required"`
-	Content    string   `json:"Content"     form:"Content"`
+	Title      string   `json:"Title"       form:"Title"`
+	Content    string   `json:"Content"     form:"Content"    binding:"required"`
 	PictureUrl []string `json:"PictureUrl"  form:"PictureUrl"`
 }
 
