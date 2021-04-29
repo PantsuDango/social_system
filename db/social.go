@@ -149,3 +149,19 @@ func (SocialDB) SelectUserAttentionMapByFollowerId(follower_id int) []tables.Use
 func (SocialDB) CreatePostQuotedMap(post_quoted_map tables.PostQuotedMap) {
 	exeDB.Create(&post_quoted_map)
 }
+
+func (SocialDB) DeletePost(id int) {
+	exeDB.Where(`id = ?`, id).Delete(&tables.Post{})
+}
+
+func (SocialDB) DeletePostPictureMap(post_id int) {
+	exeDB.Where(`post_id = ?`, post_id).Delete(&tables.PostPictureMap{})
+}
+
+func (SocialDB) DeletePostCommentMap(post_id int) {
+	exeDB.Where(`post_id = ?`, post_id).Delete(&tables.PostCommentMap{})
+}
+
+func (SocialDB) DeletePostStarMapByPostId(post_id int) {
+	exeDB.Where(`post_id = ?`, post_id).Delete(&tables.PostStarMap{})
+}

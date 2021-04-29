@@ -591,3 +591,40 @@ func (Controller Controller) AddQuoted(ctx *gin.Context, user tables.User) {
 
 	JSONSuccess(ctx, http.StatusOK, "Success")
 }
+
+// 删除帖子
+func (Controller Controller) DeletePost(ctx *gin.Context, user tables.User) {
+
+	var AddQuotedParams params.AddQuotedParams
+	if err := ctx.ShouldBindBodyWith(&AddQuotedParams, binding.JSON); err != nil {
+		JSONFail(ctx, http.StatusOK, IllegalRequestParameter, "Invalid json or illegal request parameter", gin.H{
+			"Code":    IllegalRequestParameter,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	post_info, err := Controller.SocialDB.SelectPostInfo(AddQuotedParams.ID)
+	if err != nil {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "select post error", gin.H{
+			"Code":    AccessDBError,
+			"Message": err.Error(),
+		})
+		return
+	}
+
+	if post_info.UserId != user.ID {
+		JSONFail(ctx, http.StatusOK, AccessDBError, "You cannot delete posts that are not your own", gin.H{
+			"Code":    AccessDBError,
+			"Message": "You cannot delete posts that are not your own",
+		})
+		return
+	}
+
+	Controller.SocialDB.DeletePost(post_info.ID)
+	Controller.SocialDB.DeletePostPictureMap(post_info.ID)
+	Controller.SocialDB.DeletePostCommentMap(post_info.ID)
+	Controller.SocialDB.DeletePostStarMapByPostId(post_info.ID)
+
+	JSONSuccess(ctx, http.StatusOK, "Success")
+}

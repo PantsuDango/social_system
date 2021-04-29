@@ -66,6 +66,7 @@ func init() {
 		"Controller.AddComment":        Controller.AddComment,
 		"Controller.ShowUserAttention": Controller.ShowUserAttention,
 		"Controller.AddQuoted":         Controller.AddQuoted,
+		"Controller.DeletePost":        Controller.DeletePost,
 	}
 }
 
